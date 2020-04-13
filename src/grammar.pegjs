@@ -6,20 +6,18 @@ mult_term
 
 primary
   = integer
-  / "(" arithmetic_expression ")"
+  | "(" arithmetic_expression ")"
+  // | function_call                  // I've commented these
+  // | variable_value                 // two out for now
 
 integer
-  = ("+" / "-") digits
+  = ("+" | "-") digits
 
 digits
-  = ("0" / "1" / "2" / "3" / "4" / "5" / "6" / "7" / "8" / "9")+
+  = ("0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9")+
 
 addop
-  = '+' / '-'
+  = '+' | '-'
 
 mulop
-  = '*' / '/'
-
-
-_ "whitespace"
-  = [ \t\n\r]*
+  = '*' | '/'
