@@ -1,4 +1,4 @@
-// This is the top-evel of your code. It is responsible for
+// This is the top-level of your code. It is responsible for
 // parsing a script and then running it. It returns the
 // value of the last thing executed in the script.
 
@@ -26,8 +26,16 @@
 //   The default printFunction simply writes to the console. I also have
 //   a version that the tests use so I can capture output.
 
+import Inter from "./inter.js"
+import * as AST from "./ast.js"
 
 export default function compileAndRun(grammar, script, printFunction) {
 
-  return // ... the value returned by executing the SMURF script
+	let ast = grammar.parse(script, {AST : AST});
+	let inter = new Inter();
+	let result = inter.visit(ast);
+
+	return grammar.parse(script, {AST : AST})
+
+  	// ... the value returned by executing the SMURF script
 }
