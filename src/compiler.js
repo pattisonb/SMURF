@@ -31,9 +31,13 @@ import * as AST from "./ast.js"
 
 export default function compileAndRun(grammar, script, printFunction) {
 
+	let ast = grammar.parse(script, {AST: AST});
+
 	let inter = new Inter();
-	let result = grammar.parse(script, {AST: AST}).accept(inter)
-	printFunction(result)
+
+	let result = inter.visit(ast);
+
+	  // printFunction(result)
 	return result;
 
   	// ... the value returned by executing the SMURF script

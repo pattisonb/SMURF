@@ -1,23 +1,32 @@
+{
+  function makeInteger(o) {
+    return parseInt(o.join(""), 10);
+  }
+  const AST = options.AST
+}
+
 arithmetic_expression
-  = mult_term (addop mult_term)*
+  = left:mult_term right:(addop mult_term)*
+  {return new AST.BinOp(left, right)}
 
 mult_term
-  = primary (mulop primary)*
+  = left:primary right:(mulop primary)*
+  {return new AST.BinOp(left, right)}
 
 primary
-  = integer
-  | "(" arithmetic_expression ")"
-  // | function_call                  // I've commented these
-  // | variable_value                 // two out for now
+  =  integer / _ "(" equation: arithmetic_expression ")" _ {return equation}
 
 integer
-  = ("+" | "-") digits
+  = _ sign:('+' / '-')? number:number _ {return new AST.IntegerValue(sign, makeInteger(number));}
 
-digits
-  = ("0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9")+
+number
+ = [0-9]+
 
 addop
-  = '+' | '-'
+  = '+' / '-'
 
 mulop
-  = '*' | '/'
+  = '*' / '/'
+
+_ "whitespace"
+  = [ \t\n\r]*
