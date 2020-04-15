@@ -7,6 +7,8 @@ export default class Inter {
 	visitBinOp(node) {
 		let left = node.left.accept(this);
 
+		//have to use the reduce function to separate the operand from the number
+		//because the rightside is all combined
 		return node.right.reduce(
 			(total, [operand, right]) => {
 				right = right.accept(this);
