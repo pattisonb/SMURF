@@ -1,25 +1,20 @@
-//mulop and addop always undefined in the grammar
-//so i combined the operation with the rightside of the equation
-
 export class BinOp {
-	constructor(left, right) {
-		this.left = left; 
-		this.right = right;
-	}
-	accept(visit) {
-		return visit.visitBinOp(this)
-	}
+  constructor(l, op, r) {
+    this.left  = l
+    this.op    = op
+    this.right = r
+  }
+  accept(visitor) {
+    return visitor.BinOp(this)
+  }
 }
 
-
-//have to put sign in the constructor
-//can't figure out another way
 export class IntegerValue {
-	constructor(sign, value) {
-		this.sign = sign;
-		this.value = value;
-	}
-	accept(visit) {
-		return visit.visitIntegerValue(this)
-	}
+  constructor(value) {
+    this.value = value
+  }
+
+  accept(visitor) {
+    return visitor.IntegerValue(this)
+  }
 }
