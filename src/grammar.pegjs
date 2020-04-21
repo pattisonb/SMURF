@@ -28,5 +28,18 @@ addop
 mulop
   = '*' / '/'
 
+relop
+  = '==' / '!=' / '>=' / '>' / '<=' / '<'
+
+
+function_definition
+  = _ param_list brace_block _
+
+param_list
+   = "(" ")"
+
+brace_block
+  = "{" code "}"
+
 _ "whitespace"
   = [ \t\n\r]*
