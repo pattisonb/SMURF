@@ -18,3 +18,53 @@ export class IntegerValue {
     return visitor.IntegerValue(this)
   }
 }
+
+
+export class ifStatement {
+  constructor(cond, ifPart, elsePart) {
+    this.cond = cond;
+    this.ifPart = ifPart
+    this.elsePart = elsePart
+  }
+  accept(visitor) {
+    return visitor.ifStatement(this)
+  }
+}
+
+export class nullStatements {
+  constructor() {}
+  accept(visitor){
+      return visitor.nullStatements(this)
+  }
+}
+
+export class var_name {
+  constructor(name) {
+      this.name = name
+  }
+
+  accept(visitor) {
+      return visitor.var_name(this)
+  }
+}
+
+export class var_val {
+  constructor(name) {
+      this.name = name
+  }
+
+  accept(visitor) {
+      return visitor.var_val(this)
+  }
+}
+
+export class Assignment {
+  constructor(l, r) {
+      this.variable = l
+      this.expr = r
+  }
+
+  accept(visitor) {
+      return visitor.Assignment(this)
+  }
+}
