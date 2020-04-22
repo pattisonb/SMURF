@@ -10,11 +10,11 @@
 }
 
 start
-  = expr
+  = code
 
 identifier       
    = id:([a-z][a-zA-Z_0-9]*)
-    { return text() }
+    { return text(id) }
 
 ///////////////////////// blocks (lists of statements) /////////////////////////
 
@@ -23,15 +23,16 @@ code
 
 statement
   = "let" _ variable_declaration
-  / assignment
-  / expr
+  / _ assignment
+  / _ expr
 
 //////////////// variables & variable declaration /////////////////////////////
 
 variable_declaration
   = v:variable_name "=" exp:expr
     {return new AST.Assignment(v, exp)}
-  / var:variable_name
+  / v:variable_name
+  {return new AST.Assignment(v, 0)}
 
 variable_value             // as rvalue
   =  id: identifier 
@@ -53,7 +54,8 @@ if_expression
 //////////////////////////////// assignment /////////////////////////////
 
 assignment
-  = variable_name "=" expr
+  = left:variable_name _ "=" _ right:expr
+  {return new AST.Assignment(left, right)}
 
 //////////////////////////////// expression /////////////////////////////
 
@@ -62,8 +64,10 @@ expr
   {return expr}
   / "if" _ expr:if_expression
   {return expr}
-  / boolean_expression
-  / arithmetic_expression
+  / expr:boolean_expression
+  {return expr}
+  / expr:arithmetic_expression
+  {return expr}
 
 
 /////////////////////// boolean expression /////////////////////////////
@@ -112,7 +116,8 @@ function_call
 //////////////////////// function definition /////////////////////////////
 
 function_definition
-  = param_list brace_block
+  = param:param_list _ code:brace_block
+    {return new AST.funcDef(param, code)}
 
 param_list
    = "(" ")"

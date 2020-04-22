@@ -68,3 +68,14 @@ export class Assignment {
       return visitor.Assignment(this)
   }
 }
+
+export class funcDef {
+  constructor(params, list){
+      this.params = params
+      this.list = list
+  }
+
+  accept(visitor){
+      return visitor.FunctionDef(this)
+  }
+}

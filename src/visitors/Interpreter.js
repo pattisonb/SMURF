@@ -70,4 +70,8 @@ export default class Interpreter {
     this.setVariable(variable, expression)
     return expression
   }
+
+  funcDef(node) {
+    return node.code.accept(this)
+  }
 }
