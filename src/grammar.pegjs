@@ -10,7 +10,7 @@
 }
 
 start
-  = expr
+  = code
 
 identifier       
    = id:([a-z][a-zA-Z_0-9]*)
@@ -19,12 +19,14 @@ identifier
 ///////////////////////// blocks (lists of statements) /////////////////////////
 
 code
-  = statement+
+  = _ state:statement+ _
+  {return new AST.Statements(state)}
 
 statement
-  = "let" _ variable_declaration
+  = "let" _ d:variable_declaration
+  {return d}
   / assignment
-  / e:expr
+  / expr
 
 //////////////// variables & variable declaration /////////////////////////////
 
@@ -32,14 +34,14 @@ variable_declaration
   = v:variable_name "=" e:expr
     {return new AST.Assignment(v,e)}
   / v:variable_name
-    {return new AST.Assignment(v, 0)}
+    {return new AST.Assignment(v, new AST.IntegerValue(0))}
 
 variable_value             // as rvalue
-  =  id:identifier
+  = _ id:identifier _
       {return new AST.var_val(id)}
 
 variable_name              // as lvalue
-  =  id:identifier
+  = _ id:identifier _
       {return new AST.var_name(id)}
 
 //////////////////////////////// if/then/else /////////////////////////////
@@ -48,7 +50,7 @@ if_expression
   = condition:expr ifPart:brace_block "else" elsePart:brace_block
     {return new AST.ifStatement(condition, ifPart, elsePart)}
   / condition:expr ifPart:brace_block
-    {return new AST.ifStatement(condition, ifPart, new AST.nullStatements())}
+    {return new AST.ifStatement(condition, ifPart, [])}
 
 //////////////////////////////// assignment /////////////////////////////
 
@@ -59,9 +61,9 @@ assignment
 //////////////////////////////// expression /////////////////////////////
 
 expr
-  = "fn" _ expr:function_definition 
+  = _ "fn" expr:function_definition 
   {return expr}
-  / "if" _ expr:if_expression 
+  / _ "if" expr:if_expression 
   {return expr}
   / boolean_expression
   / arithmetic_expression
@@ -122,7 +124,8 @@ param_list
    = "(" ")"
 
 brace_block
-  = "{" code "}"
+  = _ "{" c:code "}" _
+  {return c}
 
 _ "whitespace"
   = [ \t\n\r]*

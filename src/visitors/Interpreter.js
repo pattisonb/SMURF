@@ -40,15 +40,19 @@ export default class Interpreter {
 
   ifStatement(node) {
       let cond = node.cond.accept(this)
-      let ifPart = node.ifPart.accept(this)
-      let elsePart = node.elsePart.accept(this)
+      let ifPart = node.ifPart
+      let elsePart = node.elsePart
 
-      if(cond == 1) {
+      if(elsePart == null) {
         return ifPart
       }
 
+      else if(cond) {
+        return ifPart.accept(this)
+      }
+
       else {
-        return elsePart
+        return elsePart.accept(this)
       }
   }
 
@@ -73,5 +77,14 @@ export default class Interpreter {
 
   funcDef(node) {
     return node.code.accept(this)
+  }
+
+  Statements(node) {
+    let tempState = node.statements;
+    let count = 0;
+    for (let statement of tempState) {
+      count = statement.accept(this)
+    }
+    return count;
   }
 }

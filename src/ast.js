@@ -79,3 +79,13 @@ export class funcDef {
       return visitor.FunctionDef(this)
   }
 }
+
+export class Statements {
+  constructor(statements){
+      this.statements = statements
+  }
+
+  accept(visitor){
+      return visitor.Statements(this)
+  }
+}
