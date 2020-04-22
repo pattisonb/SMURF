@@ -79,7 +79,7 @@ export default class Interpreter {
   }
 
   funcDef(node) {
-    return node.code.accept(this)
+    return node.list
   }
 
   Statements(node) {
@@ -90,8 +90,9 @@ export default class Interpreter {
     }
     return count;
   }
+  
   funcCall(node) {
-    let call = node.call.accept(this)
-    return call.accept(this)
+    let name = node.name.accept(this)
+    return name.accept(this)
   }
 }

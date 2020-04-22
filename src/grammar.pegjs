@@ -89,7 +89,7 @@ primary
   = integer
   /function_call
   /variable_value
-  / _ "(" _ expr:arithmetic_expression _ ")" _
+  / _ "(" expr:arithmetic_expression ")" _
     { return expr }
 
 

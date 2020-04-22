@@ -76,7 +76,7 @@ export class funcDef {
   }
 
   accept(visitor){
-      return visitor.FunctionDef(this)
+      return visitor.funcDef(this)
   }
 }
 
