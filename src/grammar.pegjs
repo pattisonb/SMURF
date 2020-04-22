@@ -112,7 +112,8 @@ relop
 /////////////////////// utility NTs //////////////////////////////
 
 function_call
-  = variable_value "(" ")"     // note: no parameters
+  = call:variable_value "(" _ ")" _    // note: no parameters
+   {return new AST.funcCall(call, [])}
 
 //////////////////////// function definition /////////////////////////////
 
@@ -121,7 +122,7 @@ function_definition
   {return new AST.funcDef(params, code)}
 
 param_list
-   = "(" ")"
+   = _ "(" _ ")" _
 
 brace_block
   = _ "{" c:code "}" _

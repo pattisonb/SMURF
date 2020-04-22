@@ -60,8 +60,8 @@ export class var_val {
 
 export class Assignment {
   constructor(l, r) {
-      this.variable = l
-      this.expr = r
+      this.l = l
+      this.r = r
   }
 
   accept(visitor) {
@@ -87,5 +87,15 @@ export class Statements {
 
   accept(visitor){
       return visitor.Statements(this)
+  }
+}
+
+export class funcCall {
+  constructor(name, args){
+      this.name = name;
+      this.args = args;
+  }
+  accept(visitor){
+      return visitor.funcCall(this);
   }
 }

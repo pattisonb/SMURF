@@ -16,6 +16,7 @@ export default class Interpreter {
   constructor(target, printFunction) {
     this.target = target
     this.printFunction = printFunction
+    this.binding = new Map();
   }
 
   visit() {
@@ -69,10 +70,12 @@ export default class Interpreter {
   }
 
   Assignment(node) {
-    let variable = node.l.accept(this)
-    let expression = node.r.accept(this)
-    this.setVariable(variable, expression)
-    return expression
+    let l = node.l.accept(this)
+    let r = node.r.accept(this)
+    if(this.binding.has(l)) {
+      this.setVariable(l, r)
+    }
+    return r
   }
 
   funcDef(node) {
@@ -86,5 +89,9 @@ export default class Interpreter {
       count = statement.accept(this)
     }
     return count;
+  }
+  funcCall(node) {
+    let call = node.call.accept(this)
+    return call.accept(this)
   }
 }
