@@ -53,8 +53,8 @@ if_expression
 //////////////////////////////// assignment /////////////////////////////
 
 assignment
-  = l:variable_name _ "=" _ r:expr
-    {return new AST.Assignment(l, r)}
+  = left:variable_name _ "=" _ right:expr
+    {return new AST.Assignment(left, right)}
 
 //////////////////////////////// expression /////////////////////////////
 
@@ -115,7 +115,8 @@ function_call
 //////////////////////// function definition /////////////////////////////
 
 function_definition
-  = param_list brace_block
+  = params:param_list code:brace_block
+  {return new AST.funcDef(params, code)}
 
 param_list
    = "(" ")"
