@@ -10,11 +10,11 @@
 }
 
 start
-  = code
+  = expr
 
 identifier       
    = id:([a-z][a-zA-Z_0-9]*)
-    { return text(id) }
+    { return text() }
 
 ///////////////////////// blocks (lists of statements) /////////////////////////
 
@@ -23,25 +23,24 @@ code
 
 statement
   = "let" _ variable_declaration
-  / _ assignment
-  / _ expr
+  / assignment
+  / e:expr
 
 //////////////// variables & variable declaration /////////////////////////////
 
 variable_declaration
-  = v:variable_name "=" exp:expr
-    {return new AST.Assignment(v, exp)}
+  = v:variable_name "=" e:expr
+    {return new AST.Assignment(v,e)}
   / v:variable_name
-  {return new AST.Assignment(v, 0)}
+    {return new AST.Assignment(v, 0)}
 
 variable_value             // as rvalue
-  =  id: identifier 
-    {return new AST.var_val(id)}
-
+  =  id:identifier
+      {return new AST.var_val(id)}
 
 variable_name              // as lvalue
-  =   id: identifier 
-    {return new AST.var_name(id)}
+  =  id:identifier
+      {return new AST.var_name(id)}
 
 //////////////////////////////// if/then/else /////////////////////////////
 
@@ -54,20 +53,18 @@ if_expression
 //////////////////////////////// assignment /////////////////////////////
 
 assignment
-  = left:variable_name _ "=" _ right:expr
-  {return new AST.Assignment(left, right)}
+  = l:variable_name _ "=" _ r:expr
+    {return new AST.Assignment(l, r)}
 
 //////////////////////////////// expression /////////////////////////////
 
 expr
-  = "fn" _ expr:function_definition
+  = "fn" _ expr:function_definition 
   {return expr}
-  / "if" _ expr:if_expression
+  / "if" _ expr:if_expression 
   {return expr}
-  / expr:boolean_expression
-  {return expr}
-  / expr:arithmetic_expression
-  {return expr}
+  / boolean_expression
+  / arithmetic_expression
 
 
 /////////////////////// boolean expression /////////////////////////////
@@ -88,6 +85,8 @@ mult_term
 
 primary
   = integer
+  /function_call
+  /variable_value
   / _ "(" _ expr:arithmetic_expression _ ")" _
     { return expr }
 
@@ -116,8 +115,7 @@ function_call
 //////////////////////// function definition /////////////////////////////
 
 function_definition
-  = param:param_list _ code:brace_block
-    {return new AST.funcDef(param, code)}
+  = param_list brace_block
 
 param_list
    = "(" ")"
