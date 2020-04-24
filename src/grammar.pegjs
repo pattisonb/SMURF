@@ -13,7 +13,7 @@ start
   = code
 
 identifier       
-   = id:([a-z][a-zA-Z_0-9]*)
+   = [a-z][a-zA-Z_0-9]*
     { return text() }
 
 ///////////////////////// blocks (lists of statements) /////////////////////////
@@ -25,16 +25,17 @@ code
 statement
   = "let" _ d:variable_declaration
   {return d}
-  / assignment
+  / assign:assignment _
+    {return assign}
   / expr
 
 //////////////// variables & variable declaration /////////////////////////////
 
 variable_declaration
   = v:variable_name "=" e:expr
-    {return new AST.Assignment(v,e)}
+    {return new AST.var_dec(v,e)}
   / v:variable_name
-    {return new AST.Assignment(v, new AST.IntegerValue(0))}
+    {return new AST.var_dec(v, new AST.IntegerValue(0))}
 
 variable_value             // as rvalue
   = _ id:identifier _

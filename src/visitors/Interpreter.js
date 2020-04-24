@@ -1,14 +1,19 @@
+function boolean (val) 
+{
+  return val ? 1:0
+}
+
 const Operations = {
   "+": (l, r) => l + r,
   "-": (l, r) => l - r,
   "*": (l, r) => l * r,
   "/": (l, r) => Math.round(l / r),
-  "==": (l, r) => l == r,
-  "!=": (l, r) => l != r,
-  ">=": (l, r) => l >= r,
-  ">": (l, r) => l > r,
-  "<=": (l, r) => l <= r,
-  "<": (l, r) => l < r,
+  "==": (l, r) => boolean(l == r),
+  "!=": (l, r) => boolean(l != r),
+  ">=": (l, r) => boolean(l >= r),
+  ">": (l, r) => boolean(l > r),
+  "<=": (l, r) => boolean(l <= r),
+  "<": (l, r) => boolean(l < r),
 }
 
 export default class Interpreter {
@@ -26,12 +31,6 @@ export default class Interpreter {
   BinOp(node) {
     let l = node.left.accept(this)
     let r = node.right.accept(this)
-    if (Operations[node.op](l, r) == true) {
-      return 1;
-    }
-    if (Operations[node.op](l, r) == false) {
-      return 0;
-    }
     return Operations[node.op](l, r)
   }
 
@@ -66,16 +65,45 @@ export default class Interpreter {
   }
 
   var_val(node) {
-    return node.name
+    return this.getVariable(node.name)
   }
 
-  Assignment(node) {
-    let l = node.l.accept(this)
-    let r = node.r.accept(this)
-    if(this.binding.has(l)) {
-      this.setVariable(l, r)
+  setVariable(name, value){
+    this.binding.set(name, value)
+  }
+
+  getVariable(name){
+    if(this.binding.has(name)){
+      return this.binding.get(name)
     }
-    return r
+    else {
+      throw new Error(`undefined var ${name}`)
+    }
+  }
+
+
+  Assignment(node) {
+    let name = node.l.accept(this)
+    let value = node.r.accept(this)
+    if(this.binding.has(name)) {
+      this.setVariable(name, value)
+    }
+    else {
+      throw new Error(`undefined var ${name}`)
+    }
+    return value
+  }
+
+  var_dec (node) {
+    let name = node.l.accept(this)
+    let value = node.r.accept(this)
+    if(this.binding.has(name)) {
+      throw new Error(`previously defined var ${name}`)
+    }
+    else {
+      this.setVariable(name, value)
+    }
+    return value
   }
 
   funcDef(node) {

@@ -69,6 +69,17 @@ export class Assignment {
   }
 }
 
+export class var_dec {
+  constructor(l, r) {
+      this.l = l
+      this.r = r
+  }
+
+  accept(visitor) {
+      return visitor.var_dec(this)
+  }
+}
+
 export class funcDef {
   constructor(params, list){
       this.params = params
