@@ -1,112 +1,14 @@
-export class BinOp {
-  constructor(l, op, r) {
-    this.left  = l
-    this.op    = op
-    this.right = r
-  }
-  accept(visitor) {
-    return visitor.BinOp(this)
-  }
-}
+import { makeNode } from "./util/make_node.js"
 
-export class IntegerValue {
-  constructor(value) {
-    this.value = value
-  }
-
-  accept(visitor) {
-    return visitor.IntegerValue(this)
-  }
-}
-
-
-export class ifStatement {
-  constructor(cond, ifPart, elsePart) {
-    this.cond = cond;
-    this.ifPart = ifPart
-    this.elsePart = elsePart
-  }
-  accept(visitor) {
-    return visitor.ifStatement(this)
-  }
-}
-
-export class nullStatements {
-  constructor() {}
-  accept(visitor){
-      return visitor.nullStatements(this)
-  }
-}
-
-export class var_name {
-  constructor(name) {
-      this.name = name
-  }
-
-  accept(visitor) {
-      return visitor.var_name(this)
-  }
-}
-
-export class var_val {
-  constructor(name) {
-      this.name = name
-  }
-
-  accept(visitor) {
-      return visitor.var_val(this)
-  }
-}
-
-export class Assignment {
-  constructor(l, r) {
-      this.l = l
-      this.r = r
-  }
-
-  accept(visitor) {
-      return visitor.Assignment(this)
-  }
-}
-
-export class var_dec {
-  constructor(l, r) {
-      this.l = l
-      this.r = r
-  }
-
-  accept(visitor) {
-      return visitor.var_dec(this)
-  }
-}
-
-export class funcDef {
-  constructor(params, list){
-      this.params = params
-      this.list = list
-  }
-
-  accept(visitor){
-      return visitor.funcDef(this)
-  }
-}
-
-export class Statements {
-  constructor(statements){
-      this.statements = statements
-  }
-
-  accept(visitor){
-      return visitor.Statements(this)
-  }
-}
-
-export class funcCall {
-  constructor(name, args){
-      this.name = name;
-      this.args = args;
-  }
-  accept(visitor){
-      return visitor.funcCall(this);
-  }
-}
+export const          Assignment=makeNode("Assignment", "variable", "expr")
+export const               BinOp=makeNode("BinOp", "l", "op", "r")
+export const        FunctionCall=makeNode("FunctionCall", "name", "args")
+export const  FunctionDefinition=makeNode("FunctionDefinition", "formals", "code")
+export const         IfStatement=makeNode("IfStatement", "predicate", "thenCode", "elseCode")
+export const        IntegerValue=makeNode("IntegerValue", "value")
+export const       InternalPrint=makeNode("InternalPrint", "args")
+export const       StatementList=makeNode("StatementList", "statements")
+export const               Thunk=makeNode("Thunk", "formals", "code", "binding")
+export const VariableDeclaration=makeNode("VariableDeclaration", "variable", "initialValue")
+export const        VariableName=makeNode("VariableName", "name")
+export const   VariableValue=makeNode("VariableValue", "name")

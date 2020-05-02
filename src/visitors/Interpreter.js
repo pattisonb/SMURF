@@ -1,126 +1,78 @@
-function boolean (val) 
-{
-  return val ? 1:0
+function bool(value) {
+    return value ? 1 : 0
 }
-
-const Operations = {
-  "+": (l, r) => l + r,
-  "-": (l, r) => l - r,
-  "*": (l, r) => l * r,
-  "/": (l, r) => Math.round(l / r),
-  "==": (l, r) => boolean(l == r),
-  "!=": (l, r) => boolean(l != r),
-  ">=": (l, r) => boolean(l >= r),
-  ">": (l, r) => boolean(l > r),
-  "<=": (l, r) => boolean(l <= r),
-  "<": (l, r) => boolean(l < r),
+const operations = {
+    "+": (l, r) => l + r,
+    "-": (l, r) => l - r,
+    "*": (l, r) => l * r,
+    "/": (l, r) => Math.round(l / r),
+    "<": (l, r) => bool(l < r),
+    "<=": (l, r) => bool(l <= r),
+    "==": (l, r) => bool(l == r),
+    ">=": (l, r) => bool(l >= r),
+    ">": (l, r) => bool(l > r),
+    "!=": (l, r) => bool(l != r),
 }
-
+import Binding from "../binding.js"
+import * as AST from "../ast.js"
 export default class Interpreter {
-
-  constructor(target, printFunction) {
-    this.target = target
-    this.printFunction = printFunction
-    this.binding = new Map();
-  }
-
-  visit() {
-    return this.target.accept(this)
-  }
-
-  BinOp(node) {
-    let l = node.left.accept(this)
-    let r = node.right.accept(this)
-    return Operations[node.op](l, r)
-  }
-
-  IntegerValue(node) {
-    return node.value
-  }
-
-  ifStatement(node) {
-      let cond = node.cond.accept(this)
-      let ifPart = node.ifPart
-      let elsePart = node.elsePart
-
-      if(elsePart == null) {
-        return ifPart
-      }
-
-      else if(cond) {
-        return ifPart.accept(this)
-      }
-
-      else {
-        return elsePart.accept(this)
-      }
-  }
-
-  nullStatements(node) {
-    return null;
-  }
-
-  var_name(node) {
-    return node.name
-  }
-
-  var_val(node) {
-    return this.getVariable(node.name)
-  }
-
-  setVariable(name, value){
-    this.binding.set(name, value)
-  }
-
-  getVariable(name){
-    if(this.binding.has(name)){
-      return this.binding.get(name)
+    constructor(target, printFunction) {
+        this.target = target
+        this.printFunction = printFunction
+        this.binding = new Binding()
     }
-    else {
-      throw new Error(`undefined var ${name}`)
+    visit() {
+        return this.target.accept(this)
     }
-  }
-
-
-  Assignment(node) {
-    let name = node.l.accept(this)
-    let value = node.r.accept(this)
-    if(this.binding.has(name)) {
-      this.setVariable(name, value)
+    Assignment(node) {
+        let variable = node.variable.accept(this)
+        let expr = node.expr.accept(this)
+        this.binding.updateVariable(variable, expr)
+        return expr
     }
-    else {
-      throw new Error(`undefined var ${name}`)
+    BinOp(node) {
+        let l = node.l.accept(this)
+        let r = node.r.accept(this)
+        return operations[node.op](l, r)
     }
-    return value
-  }
-
-  var_dec (node) {
-    let name = node.l.accept(this)
-    let value = node.r.accept(this)
-    if(this.binding.has(name)) {
-      throw new Error(`previously defined var ${name}`)
+    FunctionCall(node) {
+        let thunk = node.name.accept(this)
+        return thunk;
     }
-    else {
-      this.setVariable(name, value)
+    FunctionDefinition(node) {
+        return new AST.Thunk(node.formals, node.code, this.binding)
     }
-    return value
-  }
-
-  funcDef(node) {
-    return node.list
-  }
-
-  Statements(node) {
-    let tempState = node.statements;
-    let count = 0;
-    for (let statement of tempState) {
-      count = statement.accept(this)
+    IfStatement(node) {
+        let predicate = bool(node.predicate.accept(this))
+        if(predicate == 1) return node.thenCode.accept(this)
+        return node.elseCode.accept(this)
     }
-    return count;
-  }
-  
-  funcCall(node) {
-    let name = node.name.accept(this)
-    return name.accept(this)
-  }
+    IntegerValue(node) {
+        return node.value
+    }
+    InternalPrint(node) {
+        let args = node.args.map(a => a.accept(this).toString())
+        this.printFunction(args)
+        return args
+    }
+    StatementList(node) {
+        let result = 0
+        node.statements.forEach(statement => result = statement.accept(this))
+        return result
+    }
+    VariableDeclaration(node) {
+        let variable = node.variable.accept(this)
+        let initialValue = 0
+        if(node.initialValue) {
+            initialValue = node.initialValue.accept(this)
+        }
+        this.binding.setVariable(variable, initialValue)
+        return initialValue
+    }
+    VariableName(node) {
+        return node.name
+    }
+    VariableValue(node) {
+        return this.binding.getVariableValue(node.name)
+    }
 }
