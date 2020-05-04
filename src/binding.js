@@ -1,12 +1,21 @@
 export default class Binding {
-  constructor() {
+  constructor(parent = null) {
+    parent = this.parent
     this.binding = new Map()
   }
 
   getVariableValue(name) {
-    this.checkVariableExists(name)
-    return this.binding.get(name)
+    if(this.checkVariableExists(name)) {
+      return this.binding.get(name)
+    }
+    else if (this.parent != null) {
+        return this.parent.getVariableValue(name);
+    }
+    else {
+      throw new Error (`The variable ${name} does not exist`)
+    }
   }
+
 
 
   setVariable(name, value) {
@@ -16,12 +25,32 @@ export default class Binding {
   }
 
   updateVariable(name, value) {
-    this.checkVariableExists(name)
-    this.setVariable(name, value)
+    if (this.binding.has(name)) {
+      this.binding.set(name, value)
+    }
+    else if (this.parent.checkVariableExists(name)) {
+      this.parent.updateVariable(name, value)
+    }
+    else {
+      throw new Error (`The variable ${name} does not exist`)
+    }
   }
 
   checkVariableExists(name) {
-    if (!this.binding.has(name))
-      throw new Error(`Reference to unknown variable ${name}`)
+    if (!this.binding.has(name)){
+      if(this.parent == null){
+        return false
+      }
+      return this.parent.checkVariableExists(name)
+    }
+    return true
+  }
+
+  push() {
+    return new Binding(this)
+  }
+
+  pop() {
+    return this.parent
   }
 }

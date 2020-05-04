@@ -37,7 +37,26 @@ export default class Interpreter {
     }
     FunctionCall(node) {
         let thunk = node.name.accept(this)
-        return thunk;
+        let newBinding = thunk.binding.push();
+        let values = node.args
+        let names = thunk.formals
+            //check to see if there are no parameters
+        if(names.length != values.length) {
+            return thunk.code.accept(this)
+        }
+        names.forEach(function(variable, i) {
+            //name of variable stored inside of name
+            let name = variable.name
+            let val = values[i].value != null ? values[i].value : this.binding.getVariableValue(name);
+            if(!newBinding.checkVariableExists(name)) {
+                newBinding.setVariable(name, val)
+            } else {
+                newBinding.updateVariable(name, val)
+            }
+        });
+        this.binding = newBinding.pop()
+        let newInter = new Interpreter(this.target, this.printFunction, newBinding);
+        return newInter.visit(thunk.code)
     }
     FunctionDefinition(node) {
         return new AST.Thunk(node.formals, node.code, this.binding)

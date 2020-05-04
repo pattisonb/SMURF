@@ -130,9 +130,10 @@ function_call
     { return new AST.FunctionCall(name, args) }
 
 call_arguments
-  = ''
-    { return [] }
-
+  = args:(expr ("," expr)*)
+      {return args}
+    / ''
+    {return []}
 //////////////////////////////// function definition /////////////////////////////
 
 function_definition
@@ -140,7 +141,8 @@ function_definition
     { return new AST.FunctionDefinition(params, code) }
 
 param_list
-   = "(" _ ")" { return [] }
+   = "(" ")"
+   / "(" variable_name ( "," variable_name )* ")"
 
 brace_block
   = "{" _ code:code _ "}" { return code }
