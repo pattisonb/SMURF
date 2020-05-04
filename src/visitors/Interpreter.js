@@ -40,22 +40,30 @@ export default class Interpreter {
         let newBinding = thunk.binding.push();
         let values = node.args
         let names = thunk.formals
+        names.shift()
+        names.pop();
             //check to see if there are no parameters
-        if(names.length != values.length) {
+        if(names.length == 0) {
             return thunk.code.accept(this)
         }
         names.forEach(function(variable, i) {
-            //name of variable stored inside of name
-            let name = variable.name
-            let val = values[i].value != null ? values[i].value : this.binding.getVariableValue(name);
-            if(!newBinding.checkVariableExists(name)) {
-                newBinding.setVariable(name, val)
-            } else {
-                newBinding.updateVariable(name, val)
+            if(variable.name) {
+                if((names.length) != values.length) {
+                    throw new Error(`Function calls for ${names.length} parameters but was only passed ${values.length}`)
+                }
+                //name of variable stored inside of name
+                let name = variable.name
+                let val = values[i].value != null ? values[i].value : newBinding.parent.getVariableValue(name);
+                if(!newBinding.checkVariableExists(name)) {
+                    newBinding.setVariable(name, val)
+                    console.log(newBinding)
+                } else {
+                    newBinding.updateVariable(name, val)
+                }
             }
         });
-        this.binding = newBinding.pop()
         let newInter = new Interpreter(this.target, this.printFunction, newBinding);
+        this.binding = newBinding.parent;
         return newInter.visit(thunk.code)
     }
     FunctionDefinition(node) {

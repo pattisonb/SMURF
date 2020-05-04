@@ -1,11 +1,11 @@
 export default class Binding {
   constructor(parent = null) {
-    parent = this.parent
+    this.parent = parent
     this.binding = new Map()
   }
 
   getVariableValue(name) {
-    if(this.checkVariableExists(name)) {
+    if(this.binding.has(name)) {
       return this.binding.get(name)
     }
     else if (this.parent != null) {
@@ -37,13 +37,15 @@ export default class Binding {
   }
 
   checkVariableExists(name) {
-    if (!this.binding.has(name)){
+    if (this.binding.has(name)) {
+      return true;
+    }
+    else {
       if(this.parent == null){
         return false
       }
       return this.parent.checkVariableExists(name)
     }
-    return true
   }
 
   push() {
