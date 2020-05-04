@@ -56,7 +56,6 @@ export default class Interpreter {
                 let val = values[i].value != null ? values[i].value : newBinding.parent.getVariableValue(name);
                 if(!newBinding.checkVariableExists(name)) {
                     newBinding.setVariable(name, val)
-                    console.log(newBinding)
                 } else {
                     newBinding.updateVariable(name, val)
                 }
