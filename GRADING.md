@@ -1,3 +1,66 @@
+# Week 3
+
+| Part           | Comments    | Points |
+|----------------|-------------|--------|
+| provided tests | 5 failed    |     55 |
+| extras         | 4 failed    |      2 |
+| Coding         |             |     22 |
+| **TOTAL**      |             |     79 |
+
+
+        File: Interpreter.js
+        38:     FunctionCall(node) {
+        39:         let thunk = node.name.accept(this)
+        40:         let newBinding = thunk.binding.push();
+        41:         let values = node.args
+        42:         let names = thunk.formals
+
+All this stripping and skipping is a whole lot easier in the grammar
+stages. You can arrange only to pass the important things into the AST,
+and then in the interpreter just deal with real values.
+
+        43:         //removing leading and trailing parenthesis from the args
+        44:         names.shift()
+        45:         names.pop();
+        46:             //check to see if there are no arameters
+
+This would work if the function declares local variables: it still needs
+its own binding to hold them.
+
+        47:         if(names.length == 0) {
+        48:             return thunk.code.accept(this)
+        49:         }
+        50:         names.forEach(function(variable, i) {
+        51:             if(variable.name) {
+
+Why test this inside the loop? not only is it unnecessary, but it's also
+a bug. The the definition has no formals, but the function is called
+with some, this won't detect it.
+
+        52:                 if((names.length) != values.length) {
+        53:                     throw new Error(`Function calls for ${names.length} parameters but was only passed ${values.length}`)
+        54:                 }
+        55:                 //name of variable stored inside of name
+        56:                 let name = variable.name
+
+All these checks for `null` are a pretty good clue that something is
+amiss...
+
+        57:                 let val = values[i].value != null ? values[i].value : newBinding.parent.getVariableValue(name);
+        58:                 if(!newBinding.checkVariableExists(name)) {
+        59:                     newBinding.setVariable(name, val)
+        60:                 } else {
+        61:                     newBinding.updateVariable(name, val)
+        62:                 }
+        63:             }
+        64:         });
+        65:         let newInter = new Interpreter(this.target, this.printFunction, newBinding);
+        66:         this.binding = newBinding.parent;
+        67:         return newInter.visit(thunk.code)
+        68:     }
+        9:     FunctionDefinition(node) {
+
+
 # Week 2
 
 | Part           | Comments    | Points |
