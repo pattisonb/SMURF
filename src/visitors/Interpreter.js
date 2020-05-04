@@ -40,6 +40,7 @@ export default class Interpreter {
         let newBinding = thunk.binding.push();
         let values = node.args
         let names = thunk.formals
+        //removing leading and trailing parenthesis from the args
         names.shift()
         names.pop();
             //check to see if there are no parameters
